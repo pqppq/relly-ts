@@ -1,0 +1,27 @@
+{
+  "name": "relly-ts",
+  "version": "1.0.0",
+  "description": "This is the Typescript clone of [relly](https://github.com/KOBA789/relly). \"relly\" is the compact implementation of RDBMS written by rust.",
+  "main": "main.js",
+  "type": "module",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pqppq/relly-ts.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pqppq/relly-ts/issues"
+  },
+  "homepage": "https://github.com/pqppq/relly-ts#readme",
+  "devDependencies": {
+    "@types/node": "^17.0.26",
+    "typescript": "^4.6.3"
+  }
+}

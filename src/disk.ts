@@ -30,7 +30,7 @@ export class DiskManager {
   writePageData(pageId: PageId, buffer: Buffer): void {
     const offset = PAGE_SIZE * pageId;
 
-    const fd = fs.openSync(this.heapFilePath, "w");
+    const fd = fs.openSync(this.heapFilePath, "r+");
     fs.writeSync(fd, buffer, 0, buffer.length, offset);
     fs.closeSync(fd);
   }

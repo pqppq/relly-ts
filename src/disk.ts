@@ -5,12 +5,10 @@ export const PAGE_SIZE = 4096;
 export type PageId = number;
 
 export class DiskManager {
-  private heapFilePath: fs.PathLike;
-  private nextPageId: number;
-
-  private constructor(heapFilePath: fs.PathLike) {
-    this.heapFilePath = heapFilePath;
-
+  private constructor(
+    private heapFilePath: fs.PathLike,
+    private nextPageId: number = 0
+  ) {
     const heapFileSize = fs.statSync(this.heapFilePath).size;
     this.nextPageId = Math.ceil(heapFileSize / PAGE_SIZE);
   }

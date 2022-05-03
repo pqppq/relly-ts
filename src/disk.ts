@@ -17,19 +17,19 @@ export class DiskManager {
     return new DiskManager(heapFilePath);
   }
 
-  readPageData(pageId: PageId, buffer: Buffer): void {
+  readPageData(pageId: PageId, buffer: NodeJS.ArrayBufferView): void {
     const offset = PAGE_SIZE * pageId;
 
     const fd = fs.openSync(this.heapFilePath, "r");
-    fs.readSync(fd, buffer, 0, buffer.length, offset);
+    fs.readSync(fd, buffer, 0, buffer.byteLength, offset);
     fs.closeSync(fd);
   }
 
-  writePageData(pageId: PageId, buffer: Buffer): void {
+  writePageData(pageId: PageId, buffer: NodeJS.ArrayBufferView): void {
     const offset = PAGE_SIZE * pageId;
 
     const fd = fs.openSync(this.heapFilePath, "r+");
-    fs.writeSync(fd, buffer, 0, buffer.length, offset);
+    fs.writeSync(fd, buffer, 0, buffer.byteLength, offset);
     fs.closeSync(fd);
   }
 

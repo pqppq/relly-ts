@@ -29,7 +29,7 @@ export class Cell<T> {
   /**
    * Borrow the value to the object.
    */
-  public borroweTo(value: T, obj: object): Result<T, string> {
+  public borroweTo(obj: object): Result<T, string> {
     if (this.isBorrowed())
       return new Err("Fail to get value. The value is currently borrowed.");
     this.borrowed = true;

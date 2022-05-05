@@ -10,6 +10,11 @@ export class DiskManager {
     private heapFilePath: fs.PathLike,
     private nextPageId: number = 0
   ) {
+    if (!fs.existsSync(heapFilePath)) {
+      const fd = fs.openSync(heapFilePath, "w");
+      fs.closeSync(fd);
+    }
+
     const heapFileSize = fs.statSync(this.heapFilePath).size;
     this.nextPageId = Math.ceil(heapFileSize / PAGE_SIZE);
   }

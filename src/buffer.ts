@@ -100,25 +100,25 @@ export class BufferPoolManager {
     bufferId = evictResult.value;
     const frame = this.pool.getFrame(bufferId);
     const bufCell = frame.buffer;
-    const buffer = bufCell.unwrap();
+    const result = bufCell.borroweTo(this);
+    if (result.isErr()) {
+      return new Err(`Fail to fetch page. pageId=${pageId}`);
+    }
+
+    const buffer = result.value;
     const evictPageId = buffer.pageId;
 
-    if (bufCell.unwrap().isDirty) {
+    if (buffer.isDirty) {
       // write page data into disk
       this.disk.writePageData(evictPageId, buffer.page.data);
     }
-    const cloneResult = bufCell.clone();
-    if (cloneResult.isErr()) {
-      return new Err(`Fail to fetch page. pageId=${pageId}`);
-    }
-    const clonedBuf = cloneResult.value;
     // read data
-    this.disk.readPageData(pageId, clonedBuf.page.data);
-    clonedBuf.pageId = pageId;
-    clonedBuf.isDirty = false;
+    this.disk.readPageData(pageId, buffer.page.data);
+    buffer.pageId = pageId;
+    buffer.isDirty = false;
 
     frame.usageCount += 1;
-    frame.buffer = new Cell(clonedBuf);
+    bufCell.takeBackFrom(this);
 
     this.pageTable.delete(evictPageId);
     this.pageTable.set(pageId, bufferId);
@@ -131,12 +131,16 @@ export class BufferPoolManager {
   createPage(): Result<Cell<MyBuffer>, string> {
     const evictResult = this.pool.evict();
     if (evictResult.isErr()) {
-      return new Err("Fail to create page.");
+      return evictResult;
     }
 
     const bufferId = evictResult.value;
     const frame = this.pool.getFrame(bufferId);
-    const buffer = frame.buffer.unwrap();
+    const borroweResult = frame.buffer.borroweTo(this);
+    if (borroweResult.isErr()) {
+      return borroweResult;
+    }
+    const buffer = borroweResult.value;
     const evictPageId = buffer.pageId;
 
     if (buffer.isDirty) {
@@ -145,11 +149,9 @@ export class BufferPoolManager {
 
     const pageId = this.disk.allocatePage();
     frame.usageCount = 1;
-    frame.buffer = new Cell({
-      pageId,
-      page: new Page(),
-      isDirty: false,
-    });
+    buffer.pageId = pageId;
+    buffer.page = new Page();
+    buffer.isDirty = false;
 
     this.pageTable.delete(evictPageId);
     this.pageTable.set(pageId, bufferId);

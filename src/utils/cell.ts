@@ -1,11 +1,16 @@
 import clone from "clone";
 import { Result, Ok, Err } from "./result";
+import * as hash from "object-hash";
 
 export class Cell<T> {
   /**
    * Creates a new Cell containing the given value.
    */
-  constructor(private value: T, private borrowed: boolean = false) {}
+  constructor(
+    private value: T,
+    private borrowed: boolean = false,
+    private ownerHash: string = ""
+  ) {}
 
   /**
    * Return this cell is borrowed or not.
@@ -19,6 +24,31 @@ export class Cell<T> {
    */
   private set(value: T): void {
     this.value = value;
+  }
+
+  /**
+   * Borrow the value to the object.
+   */
+  public borroweTo(value: T, obj: object): Result<T, string> {
+    if (this.isBorrowed())
+      return new Err("Fail to get value. The value is currently borrowed.");
+    this.borrowed = true;
+    this.ownerHash = hash.default(obj);
+    return new Ok(this.value);
+  }
+
+  /**
+   * Take back wrapped value from owner.
+   */
+  public takeBackFrom(obj: object): Result<string, string> {
+    if (hash.default(obj) === this.ownerHash) {
+      this.borrowed = false;
+      return new Ok("The value has successfully taken back.");
+    } else {
+      return new Err(
+        "Fail to take back. The object is not the owner of wrapped value."
+      );
+    }
   }
 
   /**

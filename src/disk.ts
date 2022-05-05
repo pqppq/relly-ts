@@ -3,6 +3,7 @@ import * as fs from "node:fs";
 export const PAGE_SIZE = 4096;
 
 export type PageId = number;
+export const INVALID_PAGE_ID = Number.MAX_SAFE_INTEGER;
 
 export class DiskManager {
   private constructor(

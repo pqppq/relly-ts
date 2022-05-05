@@ -54,15 +54,6 @@ test("test clone", (): void => {
   }
 });
 
-test("test consume", (): void => {
-  const cell = new Cell(1);
-  const result = cell.consume((value: number): number => {
-    return 5 * value;
-  });
-
-  expect(result.value).toBe(5);
-});
-
 test("test fail", (): void => {
   // TODO
 });

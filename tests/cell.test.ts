@@ -54,6 +54,33 @@ test("test clone", (): void => {
   }
 });
 
-test("test fail", (): void => {
-  // TODO
+test("test borroweTo/takeBackFrom", (): void => {
+  const point: Point = { x: 1, y: 2 };
+  const cell = new Cell(point);
+  const obj = {
+    sushi: ["uni", "hotate", "ikura"],
+  };
+
+  const result = cell.borroweTo(obj);
+  expect(result.isOk()).toBe(true);
+
+  if (result.isOk()) {
+    const value = result.value;
+    expect(value).toBe(point);
+  }
+
+  const obj2 = {
+    sushi: ["aji", "kohada", "iwashi"],
+  };
+
+  const result2 = cell.borroweTo(obj2);
+  expect(result2.isErr()).toBe(true);
+
+  const result3 = cell.takeBackFrom(obj2);
+  expect(result3.isErr()).toBe(true);
+  expect(cell.isBorrowed()).toBe(true);
+
+  const result4 = cell.takeBackFrom(obj);
+  expect(result4.isOk()).toBe(true);
+  expect(cell.isBorrowed()).toBe(false);
 });
